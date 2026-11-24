@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ZETA X – Player & Tagesprogramm</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { --bg:#08090c; --card:#111319; --gold:#e5b869; --gold-dim:rgba(229,184,105,.28); --gold-glow:rgba(229,184,105,.45); --white:#f5f5f7; --muted:#9aa0ac; }
+    * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+    body { background:var(--bg); color:var(--white); font-family:'Plus Jakarta Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+    a:focus-visible, button:focus-visible { outline:2.5px solid var(--gold); outline-offset:3px; box-shadow:0 0 20px var(--gold-glow); transform:scale(1.02); }
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; background:rgba(8,9,12,.96); border-bottom:1px solid rgba(255,255,255,.07); position:sticky; top:0; z-index:40; }
+    .back-btn { display:inline-flex; align-items:center; gap:8px; color:var(--gold); text-decoration:none; font-weight:600; font-size:.92rem; padding:8px 14px; border:1px solid var(--gold-dim); border-radius:8px; background:rgba(229,184,105,.08); }
+    .brand { font-weight:700; letter-spacing:.26em; color:var(--gold); font-size:1.2rem; }
+    .day-badge { font-size:.82rem; color:var(--muted); background:#111319; padding:6px 12px; border-radius:99px; border:1px solid rgba(255,255,255,.08); }
+    .player-stage { max-width:1280px; margin:24px auto 0; padding:0 24px; }
+    .video-box { position:relative; width:100%; aspect-ratio:16/9; background:#000; border-radius:14px; overflow:hidden; border:1px solid rgba(229,184,105,.22); box-shadow:0 20px 50px rgba(0,0,0,.75); }
+    .video-box iframe { width:100%; height:100%; border:0; display:block; }
+    .now-info { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; margin-top:18px; padding:18px 22px; background:var(--card); border-radius:12px; border:1px solid rgba(255,255,255,.07); }
+    .mode-tag { display:inline-block; font-size:.75rem; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#08090c; background:var(--gold); padding:4px 10px; border-radius:6px; margin-bottom:8px; }
+    .now-title { font-family:'Cinzel',serif; font-size:1.55rem; margin-bottom:4px; }
+    .now-sub { color:var(--muted); font-size:.9rem; }
+    .now-actions { display:flex; flex-wrap:wrap; gap:10px; }
+    .btn { padding:11px 18px; border-radius:8px; font-weight:600; font-size:.88rem; cursor:pointer; border:1px solid rgba(255,255,255,.15); background:rgba(255,255,255,.06); color:var(--white); text-decoration:none; display:inline-flex; align-items:center; gap:7px; }
+    .btn-gold { background:linear-gradient(135deg,#ecc376,#cfa04f); color:#0b0c10; border:none; }
+    .schedule-sec { max-width:1280px; margin:28px auto 54px; padding:0 24px; }
+    .sec-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; }
+    .sec-head h2 { font-size:1.1rem; color:#e5e8f0; }
+    .sec-head span { font-size:.82rem; color:var(--gold); }
+    .epg-list { display:grid; gap:12px; }
+    .epg-item { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; padding:16px 20px; background:var(--card); border-radius:11px; border:1px solid rgba(255,255,255,.06); }
+    .epg-item.is-live { border-color:var(--gold); background:linear-gradient(90deg,rgba(229,184,105,.12),var(--card) 55%); }
+    .epg-left { display:flex; align-items:center; gap:18px; }
+    .epg-time { font-weight:700; font-size:1.05rem; color:var(--gold); min-width:58px; }
+    .epg-meta h3 { font-size:1rem; margin-bottom:3px; }
+    .epg-meta p { font-size:.83rem; color:var(--muted); }
+    .epg-btns { display:flex; gap:8px; flex-wrap:wrap; }
+    @media(max-width:640px){ .topbar{padding:12px 16px} .player-stage,.schedule-sec{padding:0 14px} .now-title{font-size:1.25rem} }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a href="index.html" class="back-btn" tabindex="1">← Startseite</a>
+    <div class="brand">ZETA X</div>
+    <div class="day-badge" id="todayLabel">Heute</div>
+  </header>
+
+  <main class="player-stage">
+    <div class="video-box">
+      <iframe id="ytFrame" src="" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
+    </div>
+
+    <div class="now-info">
+      <div>
+        <span class="mode-tag" id="modeTag">TV-PROGRAMM NACH SENDEPLAN</span>
+        <h1 class="now-title" id="nowTitle">Lade Tagesprogramm...</h1>
+        <p class="now-sub" id="nowSub">Nur heute bis 23:59 Uhr verfügbar</p>
+      </div>
+      <div class="now-actions">
+        <button class="btn btn-gold" id="btnTvSync" onclick="startLinearTv()" tabindex="2">📺 Zum laufenden TV-Programm</button>
+        <button class="btn" id="btnRestart" onclick="restartCurrent()" tabindex="3">↺ Von vorne (24h-Abruf)</button>
+        <button class="btn" id="btnSaveToday" onclick="toggleSaveCurrent()" tabindex="4">+ Für heute merken</button>
+      </div>
+    </div>
+  </main>
+
+  <section class="schedule-sec">
+    <div class="sec-head">
+      <h2>Heutiges 24h-Programm (00:00 – 23:59 Uhr)</h2>
+      <span>Gültig nur am heutigen Sendetag</span>
+    </div>
+    <div class="epg-list" id="epgList"></div>
+  </section>
+
+  <script>
+    // WOCHENPLAN (0 = Sonntag, 1 = Montag, ..., 6 = Samstag)
+    // Ersetze die 'ytId' einfach durch deine eigenen YouTube-Video-IDs!
+    const WOCHENPLAN = {
+      0: [
+        { id:"so1", start:"00:00", end:"14:00", titel:"Oceans Untamed – Morgen-Block", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"so2", start:"14:00", end:"20:15", titel:"Wild North – Nachmittags-Doku", kat:"Dokuserien", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"so3", start:"20:15", end:"22:30", titel:"Echoes of Tomorrow (20:15 Prime Time)", kat:"Spielfilme", ytId:"ysz5S6PUM-U", dauerSek:420 },
+        { id:"so4", start:"22:30", end:"24:00", titel:"Nocturne – Spätvorstellung", kat:"Kurzfilme", ytId:"jNQXAC9IVRw", dauerSek:19 }
+      ],
+      1: [
+        { id:"mo1", start:"00:00", end:"14:00", titel:"Oceans Untamed – Tagesprogramm", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"mo2", start:"14:00", end:"20:15", titel:"Culinary Routes – Food Special", kat:"Food", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"mo3", start:"20:15", end:"22:30", titel:"Beyond The Horizon (20:15 Prime Time)", kat:"Spielfilme", ytId:"ysz5S6PUM-U", dauerSek:420 },
+        { id:"mo4", start:"22:30", end:"24:00", titel:"Silent Horizon – Nachtprogramm", kat:"Kurzfilme", ytId:"jNQXAC9IVRw", dauerSek:19 }
+      ],
+      2: [
+        { id:"di1", start:"00:00", end:"14:00", titel:"Oceans Untamed – Vormittag", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"di2", start:"14:00", end:"20:15", titel:"Atelier Noir – Fashion & Kunst", kat:"Fashion", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"di3", start:"20:15", end:"22:30", titel:"Oceans Untamed: Der Hauptfilm (20:15)", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"di4", start:"22:30", end:"24:00", titel:"Nocturne – Kurzfilm-Nacht", kat:"Kurzfilme", ytId:"jNQXAC9IVRw", dauerSek:19 }
+      ],
+      3: [
+        { id:"mi1", start:"00:00", end:"14:00", titel:"Wild North – Tagesprogramm", kat:"Dokuserien", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"mi2", start:"14:00", end:"20:15", titel:"Kurzfilm-Matinee", kat:"Kurzfilme", ytId:"jNQXAC9IVRw", dauerSek:19 },
+        { id:"mi3", start:"20:15", end:"22:30", titel:"Silent Horizon (20:15 Prime Time)", kat:"Spielfilme", ytId:"ysz5S6PUM-U", dauerSek:420 },
+        { id:"mi4", start:"22:30", end:"24:00", titel:"Oceans Untamed – Spätausgabe", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 }
+      ],
+      4: [
+        { id:"do1", start:"00:00", end:"14:00", titel:"Oceans Untamed – Morgen-Block", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"do2", start:"14:00", end:"20:15", titel:"Street Food & Meisterköche", kat:"Food", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"do3", start:"20:15", end:"22:30", titel:"Wild North – Kino-Special (20:15)", kat:"Spielfilme", ytId:"ysz5S6PUM-U", dauerSek:420 },
+        { id:"do4", start:"22:30", end:"24:00", titel:"Nocturne – Spätprogramm", kat:"Kurzfilme", ytId:"jNQXAC9IVRw", dauerSek:19 }
+      ],
+      5: [
+        { id:"fr1", start:"00:00", end:"14:00", titel:"Oceans Untamed – Freitag Vormittag", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"fr2", start:"14:00", end:"20:15", titel:"Runway Visions – Fashion Doku", kat:"Fashion", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"fr3", start:"20:15", end:"22:30", titel:"Echoes of Tomorrow (20:15 Prime Time)", kat:"Spielfilme", ytId:"ysz5S6PUM-U", dauerSek:420 },
+        { id:"fr4", start:"22:30", end:"24:00", titel:"Beyond The Horizon – Nachtkino", kat:"Spielfilme", ytId:"jNQXAC9IVRw", dauerSek:19 }
+      ],
+      6: [
+        { id:"sa1", start:"00:00", end:"14:00", titel:"Oceans Untamed – Wochenend-Start", kat:"Dokuserien", ytId:"aqz-KE-bpKQ", dauerSek:634 },
+        { id:"sa2", start:"14:00", end:"20:15", titel:"Indie Kurzfilm-Festival", kat:"Kurzfilme", ytId:"LXb3EKWsInQ", dauerSek:313 },
+        { id:"sa3", start:"20:15", end:"22:30", titel:"Beyond The Horizon (20:15 Samstagsfilm)", kat:"Spielfilme", ytId:"ysz5S6PUM-U", dauerSek:420 },
+        { id:"sa4", start:"22:30", end:"24:00", titel:"Nocturne – Mitternachtskino", kat:"Kurzfilme", ytId:"jNQXAC9IVRw", dauerSek:19 }
+      ]
+    };
+
+    const now = new Date();
+    const todayKey = now.toISOString().slice(0, 10);
+    const dayNames = ["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"];
+    document.getElementById("todayLabel").textContent = dayNames[now.getDay()] + ", " + now.toLocaleDateString("de-DE") + " (bis 23:59 Uhr)";
+
+    // Alte Merklisten von vergangenen Tagen automatisch löschen (strikte 24h-Bindung)
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith("zetax_saved_") && k !== "zetax_saved_" + todayKey) {
+        localStorage.removeItem(k);
+      }
+    });
+
+    const todayList = WOCHENPLAN[now.getDay()] || WOCHENPLAN[1];
+    let activeItem = null;
+
+    function toMin(hhmm) {
+      const [h, m] = hhmm.split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function getCurrentScheduled() {
+      const curMin = now.getHours() * 60 + now.getMinutes();
+      return todayList.find(item => curMin >= toMin(item.start) && curMin < toMin(item.end)) || todayList[0];
+    }
+
+    function getSavedIds() {
+      try { return JSON.parse(localStorage.getItem("zetax_saved_" + todayKey) || "[]"); }
+      catch(e) { return []; }
+    }
+
+    function toggleSave(id) {
+      let saved = getSavedIds();
+      if (saved.includes(id)) saved = saved.filter(x => x !== id);
+      else saved.push(id);
+      localStorage.setItem("zetax_saved_" + todayKey, JSON.stringify(saved));
+      renderEpg();
+      updateSaveBtn();
+    }
+
+    function toggleSaveCurrent() {
+      if (activeItem) toggleSave(activeItem.id);
+    }
+
+    function updateSaveBtn() {
+      if (!activeItem) return;
+      const isSaved = getSavedIds().includes(activeItem.id);
+      document.getElementById("btnSaveToday").textContent = isSaved ? "✓ Für heute gemerkt" : "+ Für heute merken";
+    }
+
+    function playOnDemand(item) {
+      activeItem = item;
+      document.getElementById("modeTag").textContent = "24H-TAGESABRUF · NUR HEUTE VERFÜGBAR";
+      document.getElementById("nowTitle").textContent = item.titel;
+      document.getElementById("nowSub").textContent = "Reguläre Sendezeit heute: " + item.start + " – " + item.end + " Uhr · Kategorie: " + item.kat;
+      document.getElementById("ytFrame").src = "https://www.youtube.com/embed/" + item.ytId + "?autoplay=1&rel=0&modestbranding=1";
+      updateSaveBtn();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function startLinearTv() {
+      const item = getCurrentScheduled();
+      activeItem = item;
+      const startSec = toMin(item.start) * 60;
+      const nowSec = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      const offset = Math.max(0, (nowSec - startSec) % item.dauerSek);
+      document.getElementById("modeTag").textContent = "LAUFENDES TV-PROGRAMM (" + item.start + " – " + item.end + " UHR)";
+      document.getElementById("nowTitle").textContent = item.titel;
+      document.getElementById("nowSub").textContent = "Läuft nach heutigem Sendeplan · Kategorie: " + item.kat;
+      document.getElementById("ytFrame").src = "https://www.youtube.com/embed/" + item.ytId + "?autoplay=1&start=" + offset + "&rel=0&modestbranding=1";
+      updateSaveBtn();
+    }
+
+    function restartCurrent() {
+      if (activeItem) playOnDemand(activeItem);
+    }
+
+    function renderEpg() {
+      const currentScheduled = getCurrentScheduled();
+      const saved = getSavedIds();
+      const container = document.getElementById("epgList");
+      container.innerHTML = "";
+
+      todayList.forEach((item, idx) => {
+        const isLive = item.id === currentScheduled.id;
+        const isSaved = saved.includes(item.id);
+        const div = document.createElement("div");
+        div.className = "epg-item" + (isLive ? " is-live" : "");
+        div.innerHTML = `
+          <div class="epg-left">
+            <div class="epg-time">${item.start}</div>
+            <div class="epg-meta">
+              <h3>${item.titel} ${isLive ? "· <span style='color:#e5b869'>JETZT IM TV</span>" : ""}</h3>
+              <p>${item.start} – ${item.end} Uhr · ${item.kat} · Verfügbar bis 23:59 Uhr</p>
+            </div>
+          </div>
+          <div class="epg-btns">
+            <button class="btn btn-gold" onclick='playOnDemand(todayList[${idx}])'>▶ Sofort / Nochmal ansehen</button>
+            <button class="btn" onclick='toggleSave("${item.id}")'>${isSaved ? "✓ Gemerkt (heute)" : "+ Für heute merken"}</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    // Startlogik aus URL-Parametern (nur heutige Sendungen zulässig!)
+    const params = new URLSearchParams(window.location.search);
+    const reqId = params.get("id");
+    const reqMode = params.get("mode");
+    const foundToday = reqId ? todayList.find(x => x.id === reqId) : null;
+
+    renderEpg();
+    if (foundToday && reqMode === "ondemand") {
+      playOnDemand(foundToday);
+    } else {
+      startLinearTv();
+    }
+  </script>
+</body>
+</html>
