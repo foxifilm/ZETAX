@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ZETA X – Tagesprogramm & 24h Mediathek</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-main: #08090c;
+      --bg-card: #111319;
+      --gold: #e5b869;
+      --gold-dim: rgba(229, 184, 105, 0.25);
+      --gold-glow: rgba(229, 184, 105, 0.45);
+      --text-white: #f5f5f7;
+      --text-muted: #9aa0ac;
+      --sidebar-width: 78px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-white);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    a:focus-visible, button:focus-visible {
+      outline: 2.5px solid var(--gold);
+      outline-offset: 4px;
+      box-shadow: 0 0 22px var(--gold-glow);
+      transform: scale(1.03);
+    }
+    .tv-sidebar {
+      position: fixed; top: 0; left: 0; width: var(--sidebar-width); height: 100vh;
+      background: linear-gradient(180deg, rgba(8,9,12,0.96) 0%, rgba(8,9,12,0.85) 100%);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      display: flex; flex-direction: column; align-items: center; padding-top: 96px; gap: 28px; z-index: 50;
+    }
+    .side-icon {
+      width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted); text-decoration: none; transition: 0.2s; background: transparent; border: none; cursor: pointer;
+    }
+    .side-icon.active { background: rgba(229, 184, 105, 0.14); color: var(--gold); border: 1px solid var(--gold-dim); }
+    .side-icon:hover { color: var(--gold); background: rgba(255,255,255,0.05); }
+    .side-icon svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.9; }
+
+    .top-header {
+      position: fixed; top: 0; left: 0; right: 0; height: 76px; padding: 0 42px 0 34px;
+      display: flex; align-items: center; justify-content: space-between;
+      background: linear-gradient(180deg, rgba(8,9,12,0.94) 0%, rgba(8,9,12,0) 100%); z-index: 60;
+    }
+    .brand-logo {
+      font-weight: 700; font-size: 1.45rem; letter-spacing: 0.26em; color: var(--gold);
+      text-decoration: none; text-transform: uppercase;
+    }
+    .tablet-nav { display: none; align-items: center; gap: 24px; }
+    .tablet-nav a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; font-weight: 500; padding-bottom: 4px; }
+    .tablet-nav a.active { color: var(--gold); border-bottom: 2px solid var(--gold); }
+
+    .day-badge {
+      display: flex; align-items: center; gap: 8px; background: rgba(17, 19, 25, 0.88);
+      border: 1px solid var(--gold-dim); padding: 6px 14px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 600; letter-spacing: 0.06em; color: var(--gold);
+    }
+    .live-dot {
+      width: 8px; height: 8px; background: #ff3b3b; border-radius: 50%;
+      box-shadow: 0 0 8px #ff3b3b; animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(0.85); } }
+
+    .main-wrap { margin-left: var(--sidebar-width); padding-bottom: 54px; }
+
+    .hero {
+      position: relative; width: 100%; height: 64vh; min-height: 450px; max-height: 620px;
+      display: flex; align-items: center; padding: 68px 56px 30px 44px; overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background-image: url('https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=1920&q=85');
+      background-size: cover; background-position: 72% 38%; filter: brightness(0.86) contrast(1.08); z-index: 1;
+    }
+    .hero-overlay {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(90deg, #08090c 0%, rgba(8,9,12,0.94) 36%, rgba(8,9,12,0.22) 68%, rgba(8,9,12,0.45) 100%),
+        linear-gradient(0deg, #08090c 0%, rgba(8,9,12,0.65) 18%, rgba(8,9,12,0) 55%);
+      z-index: 2;
+    }
+    .hero-content { position: relative; z-index: 3; max-width: 560px; }
+    .hero-kicker { color: var(--gold); font-size: 0.85rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 10px; }
+    .hero-title {
+      font-family: 'Cinzel', serif; font-size: clamp(2.1rem, 4vw, 3.4rem); font-weight: 500;
+      line-height: 1.08; letter-spacing: 0.08em; margin-bottom: 14px; text-transform: uppercase;
+    }
+    .hero-desc { color: #c7cbd4; font-size: 0.96rem; line-height: 1.55; margin-bottom: 24px; max-width: 440px; }
+    .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .btn-watch {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: linear-gradient(135deg, #ecc376 0%, #cfa04f 100%); color: #0b0c10;
+      font-weight: 700; font-size: 0.92rem; padding: 12px 22px; border-radius: 9px;
+      text-decoration: none; border: none; cursor: pointer; box-shadow: 0 8px 24px rgba(229, 184, 105, 0.25);
+    }
+    .btn-sec {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(255, 255, 255, 0.09); border: 1px solid rgba(255, 255, 255, 0.18);
+      color: var(--text-white); font-weight: 600; font-size: 0.9rem; padding: 12px 18px;
+      border-radius: 9px; text-decoration: none; cursor: pointer;
+    }
+    .btn-sec.saved { border-color: var(--gold); color: var(--gold); background: rgba(229, 184, 105, 0.12); }
+
+    .section-row { padding: 18px 44px 10px 44px; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .section-title { font-size: 1.08rem; font-weight: 600; color: #e4e7ee; }
+    .section-sub { font-size: 0.82rem; color: var(--gold); }
+
+    .cards-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 18px; }
+    .card {
+      position: relative; display: flex; flex-direction: column; text-decoration: none;
+      border-radius: 10px; overflow: hidden; background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.08); transition: 0.22s;
+    }
+    .card:hover { transform: translateY(-3px); border-color: var(--gold-dim); }
+    .card-thumb-wrap { position: relative; width: 100%; aspect-ratio: 16 / 10; }
+    .card-thumb { width: 100%; height: 100%; object-fit: cover; display: block; filter: brightness(0.84); }
+    .time-pill {
+      position: absolute; top: 8px; left: 8px; background: rgba(8,9,12,0.86);
+      border: 1px solid var(--gold-dim); color: var(--gold); font-size: 0.74rem;
+      font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    }
+    .status-pill {
+      position: absolute; top: 8px; right: 8px; background: rgba(255,59,59,0.9);
+      color: #fff; font-size: 0.68rem; font-weight: 700; padding: 3px 7px; border-radius: 6px;
+    }
+    .card-body { padding: 10px 12px 12px 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+    .card-title { font-size: 0.9rem; font-weight: 600; color: #f2f4f8; }
+    .card-actions { display: flex; gap: 6px; margin-top: auto; }
+    .mini-btn {
+      flex: 1; text-align: center; font-size: 0.76rem; font-weight: 600; padding: 6px 8px;
+      border-radius: 6px; text-decoration: none; cursor: pointer; border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.06); color: var(--text-white);
+    }
+    .mini-btn.gold { background: var(--gold); color: #08090c; border-color: var(--gold); }
+    .mini-btn.saved { border-color: var(--gold); color: var(--gold); }
+
+    .empty-note { color: var(--text-muted); font-size: 0.9rem; padding: 14px; background: var(--bg-card); border-radius: 10px; border: 1px dashed rgba(255,255,255,0.12); }
+
+    @media (max-width: 1024px) {
+      .tv-sidebar { display: none; }
+      .main-wrap { margin-left: 0; }
+      .top-header { padding: 0 24px; background: rgba(8,9,12,0.92); border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .tablet-nav { display: flex; }
+      .hero { padding: 86px 28px 28px; height: 54vh; }
+      .section-row { padding: 16px 24px 8px; }
+      .cards-grid { grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    }
+    @media (max-width: 640px) {
+      .top-header { flex-direction: column; height: auto; padding: 12px 16px; gap: 8px; }
+      .brand-row { width: 100%; display: flex; justify-content: space-between; align-items: center; }
+      .tablet-nav { width: 100%; justify-content: space-around; }
+      .hero { height: auto; min-height: 410px; padding: 112px 20px 26px; align-items: flex-end; text-align: center; }
+      .hero-overlay { background: linear-gradient(0deg, #08090c 8%, rgba(8,9,12,0.85) 48%, rgba(8,9,12,0.35) 100%); }
+      .hero-content { margin: 0 auto; }
+      .hero-actions { justify-content: center; }
+      .section-row { padding: 14px 16px 6px; }
+      .cards-grid { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 12px; padding-bottom: 6px; }
+      .cards-grid::-webkit-scrollbar { display: none; }
+      .card { flex: 0 0 210px; scroll-snap-align: start; }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <div class="brand-row" style="display:flex; align-items:center; gap:32px;">
+      <a href="index.html" class="brand-logo" tabindex="1">ZETA X</a>
+      <nav class="tablet-nav">
+        <a href="index.html" class="active">Heute</a>
+        <a href="player.html?mode=tv">TV-Programm</a>
+        <a href="#merkliste">Meine 24h-Liste</a>
+      </nav>
+    </div>
+    <div class="day-badge" id="todayBadge">
+      <span class="live-dot"></span>
+      <span id="todayLabel">HEUTE · NUR 24H VERFÜGBAR</span>
+    </div>
+  </header>
+
+  <aside class="tv-sidebar">
+    <a href="index.html" class="side-icon active" title="Heutiges Programm" tabindex="2">
+      <svg viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
+    </a>
+    <a href="player.html?mode=tv" class="side-icon" title="Laufendes TV-Programm" tabindex="3">
+      <svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="15" rx="2"/><path d="M8 21h8M12 19v2"/></svg>
+    </a>
+    <a href="#merkliste" class="side-icon" title="Heute später ansehen" tabindex="4">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+    </a>
+  </aside>
+
+  <main class="main-wrap">
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-kicker" id="heroKicker">HEUTE UM 20:15 UHR · HAUPTFILM</div>
+        <h1 class="hero-title" id="heroTitle">OCEANS<br>UNTAMED</h1>
+        <p class="hero-desc" id="heroDesc">Läuft heute um 20:15 Uhr im regulären TV-Programm – oder du startest den Film schon jetzt vorab, verschiebst ihn auf später oder schaust ihn heute nochmal an (gültig bis 23:59 Uhr).</p>
+        <div class="hero-actions">
+          <a href="player.html?mode=tv" class="btn-watch" tabindex="5">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            TV einschalten
+          </a>
+          <a href="player.html?slot=3" id="heroInstantBtn" class="btn-sec" tabindex="6">Sofort / Nochmal ansehen</a>
+          <button type="button" id="heroSaveBtn" class="btn-sec" tabindex="7">+ Für heute merken</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-row">
+      <div class="section-header">
+        <h2 class="section-title">Heutiges TV-Programm (nur heute abrufbar)</h2>
+        <span class="section-sub">Verfällt automatisch um 00:00 Uhr</span>
+      </div>
+      <div class="cards-grid" id="todayGrid"></div>
+    </section>
+
+    <section class="section-row" id="merkliste">
+      <div class="section-header">
+        <h2 class="section-title">Für heute später gemerkt (24h-Timeshift)</h2>
+        <span class="section-sub" id="savedCount">0 Filme</span>
+      </div>
+      <div id="savedContainer"></div>
+    </section>
+  </main>
+
+  <script>
+    const WOCHENPLAN = {
+      0: [
+        { slot: 0, zeit: "10:00", dauer: 90, titel: "Sonntags-Matinee: Wild North", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "14:00", dauer: 85, titel: "Atelier & Form", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "17:30", dauer: 60, titel: "Küche der Küsten", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 110, titel: "Oceans Untamed", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:15", dauer: 95, titel: "Nocturne", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80" }
+      ],
+      1: [
+        { slot: 0, zeit: "11:00", dauer: 60, titel: "Kurzfilm-Fenster: Blickwinkel", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "15:00", dauer: 90, titel: "Silent Horizon", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "18:00", dauer: 75, titel: "Design & Stoffe", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 105, titel: "Echoes of Tomorrow", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:10", dauer: 90, titel: "Beyond The Horizon", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=600&q=80" }
+      ],
+      2: [
+        { slot: 0, zeit: "10:30", dauer: 75, titel: "Naturwelten: Nordlicht", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "14:30", dauer: 80, titel: "Independent Kurzfilme", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "18:15", dauer: 60, titel: "Kulinarische Reise", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 110, titel: "Oceans Untamed", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:15", dauer: 95, titel: "Nocturne", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80" }
+      ],
+      3: [
+        { slot: 0, zeit: "11:00", dauer: 65, titel: "Studio-Porträts", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "15:15", dauer: 85, titel: "Silent Horizon", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "18:00", dauer: 70, titel: "Taste & Handwerk", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 105, titel: "Beyond The Horizon", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:10", dauer: 90, titel: "Echoes of Tomorrow", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80" }
+      ],
+      4: [
+        { slot: 0, zeit: "10:00", dauer: 80, titel: "Morgen-Doku: Wild North", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "14:00", dauer: 90, titel: "Mode & Bewegung", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "17:45", dauer: 75, titel: "Kurzfilm-Auslese", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 110, titel: "Oceans Untamed", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:15", dauer: 95, titel: "Silent Horizon", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80" }
+      ],
+      5: [
+        { slot: 0, zeit: "11:30", dauer: 70, titel: "Freitags-Shorts", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "15:00", dauer: 90, titel: "Kino-Werkstatt", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "18:00", dauer: 75, titel: "Nachtmärkte der Welt", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 115, titel: "Nocturne", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:20", dauer: 95, titel: "Beyond The Horizon", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=600&q=80" }
+      ],
+      6: [
+        { slot: 0, zeit: "10:00", dauer: 95, titel: "Samstags-Doku: Oceans", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1568430462989-44163eb1752f?auto=format&fit=crop&w=600&q=80" },
+        { slot: 1, zeit: "14:00", dauer: 90, titel: "Wild North", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" },
+        { slot: 2, zeit: "17:30", dauer: 80, titel: "Avantgarde & Stil", ytId: "ysz5S6PUM-U", bild: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=600&q=80" },
+        { slot: 3, zeit: "20:15", dauer: 110, titel: "Echoes of Tomorrow", ytId: "aqz-KE-bpKQ", bild: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=600&q=80", prime: true },
+        { slot: 4, zeit: "22:15", dauer: 95, titel: "Nocturne", ytId: "LXb3EKWsInQ", bild: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?auto=format&fit=crop&w=600&q=80" }
+      ]
+    };
+
+    const TAGE = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+    const now = new Date();
+    const dayIdx = now.getDay();
+    const dateKey = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
+    const storageKey = "zetax_saved_" + dateKey;
+
+    // Alte Merklisten von Vortagen strikt löschen
+    Object.keys(localStorage).forEach(k => {
+      if (k.startsWith("zetax_saved_") && k !== storageKey) localStorage.removeItem(k);
+    });
+
+    function getSavedSlots() {
+      try { return JSON.parse(localStorage.getItem(storageKey) || "[]"); } catch { return []; }
+    }
+    function toggleSaveSlot(slot) {
+      let list = getSavedSlots();
+      if (list.includes(slot)) list = list.filter(s => s !== slot);
+      else list.push(slot);
+      localStorage.setItem(storageKey, JSON.stringify(list));
+      renderAll();
+    }
+
+    function timeToMin(str) {
+      const [h, m] = str.split(":").map(Number);
+      return h * 60 + m;
+    }
+
+    function renderAll() {
+      const programm = WOCHENPLAN[dayIdx] || WOCHENPLAN[0];
+      const saved = getSavedSlots();
+      const nowMin = now.getHours() * 60 + now.getMinutes();
+
+      document.getElementById("todayLabel").textContent = TAGE[dayIdx].toUpperCase() + " · NUR HEUTE VERFÜGBAR";
+
+      const primeItem = programm.find(p => p.prime) || programm[3] || programm[0];
+      document.getElementById("heroKicker").textContent = "HEUTE UM " + primeItem.zeit + " UHR · HAUPTFILM";
+      document.getElementById("heroTitle").textContent = primeItem.titel;
+      document.getElementById("heroInstantBtn").href = "player.html?slot=" + primeItem.slot;
+      const heroSaveBtn = document.getElementById("heroSaveBtn");
+      const isPrimeSaved = saved.includes(primeItem.slot);
+      heroSaveBtn.textContent = isPrimeSaved ? "✓ Für heute gemerkt" : "+ Für heute merken";
+      heroSaveBtn.classList.toggle("saved", isPrimeSaved);
+      heroSaveBtn.onclick = () => toggleSaveSlot(primeItem.slot);
+
+      const grid = document.getElementById("todayGrid");
+      grid.innerHTML = "";
+      programm.forEach((item, idx) => {
+        const start = timeToMin(item.zeit);
+        const end = start + item.dauer;
+        let statusHtml = "";
+        let actionText = "Vorab ansehen";
+        if (nowMin >= start && nowMin < end) {
+          statusHtml = '<span class="status-pill">LÄUFT GERADE</span>';
+          actionText = "Sofort starten";
+        } else if (nowMin >= end) {
+          actionText = "Nochmal ansehen";
+        }
+        const isSaved = saved.includes(item.slot);
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-thumb-wrap">
+            <img class="card-thumb" src="${item.bild}" alt="${item.titel}">
+            <span class="time-pill">${item.zeit} Uhr</span>
+            ${statusHtml}
+          </div>
+          <div class="card-body">
+            <div class="card-title">${item.titel}</div>
+            <div class="card-actions">
+              <a href="player.html?slot=${item.slot}" class="mini-btn gold" tabindex="${10 + idx * 2}">${actionText}</a>
+              <button type="button" class="mini-btn ${isSaved ? 'saved' : ''}" data-slot="${item.slot}" tabindex="${11 + idx * 2}">${isSaved ? '✓ Gemerkt' : '+ Merken'}</button>
+            </div>
+          </div>
+        `;
+        card.querySelector("button").onclick = () => toggleSaveSlot(item.slot);
+        grid.appendChild(card);
+      });
+
+      const savedCont = document.getElementById("savedContainer");
+      document.getElementById("savedCount").textContent = saved.length + (saved.length === 1 ? " Film heute" : " Filme heute");
+      if (saved.length === 0) {
+        savedCont.innerHTML = '<div class="empty-note">Du hast noch keinen Film für heute verschoben. Klicke bei einem heutigen Programmpunkt auf <strong>„+ Merken“</strong>, um ihn dir für später (bis 23:59 Uhr) bereitzustellen.</div>';
+      } else {
+        const sGrid = document.createElement("div");
+        sGrid.className = "cards-grid";
+        programm.filter(p => saved.includes(p.slot)).forEach(item => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="card-thumb-wrap">
+              <img class="card-thumb" src="${item.bild}" alt="${item.titel}">
+              <span class="time-pill">Heute · ${item.zeit} Uhr</span>
+            </div>
+            <div class="card-body">
+              <div class="card-title">${item.titel}</div>
+              <div class="card-actions">
+                <a href="player.html?slot=${item.slot}" class="mini-btn gold">Jetzt abspielen</a>
+                <button type="button" class="mini-btn saved">Entfernen</button>
+              </div>
+            </div>
+          `;
+          card.querySelector("button").onclick = () => toggleSaveSlot(item.slot);
+          sGrid.appendChild(card);
+        });
+        savedCont.innerHTML = "";
+        savedCont.appendChild(sGrid);
+      }
+    }
+
+    renderAll();
+  </script>
+</body>
+</html>
