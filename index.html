@@ -677,31 +677,60 @@
   }
 </style>
 
+<style>
+  button:focus, a:focus, [tabindex]:focus {
+    outline: 3px solid #d4af37 !important;
+    outline-offset: 4px !important;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.8) !important;
+    transform: scale(1.04);
+    transition: transform 0.15s ease;
+  }
+</style>
+
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    const focusables = Array.from(document.querySelectorAll("button, a[href]"));
-    focusables.forEach((el) => {
+    function getVisibleFocusables() {
+      return Array.from(document.querySelectorAll("button, a[href], [tabindex]")).filter((el) => {
+        return el.offsetParent !== null && !el.disabled;
+      });
+    }
+
+    const initial = getVisibleFocusables();
+    initial.forEach((el) => {
       if (!el.hasAttribute("tabindex")) el.setAttribute("tabindex", "0");
     });
 
     document.addEventListener("keydown", function (e) {
-      const current = document.activeElement;
-      const idx = focusables.indexOf(current);
+      const code = e.keyCode || e.which;
+      const isNext = e.key === "ArrowDown" || e.key === "Down" || code === 40 || e.key === "ArrowRight" || e.key === "Right" || code === 39;
+      const isPrev = e.key === "ArrowUp" || e.key === "Up" || code === 38 || e.key === "ArrowLeft" || e.key === "Left" || code === 37;
 
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      if (isNext || isPrev) {
         e.preventDefault();
-        const next = focusables[(idx + 1) % focusables.length] || focusables.at(0);
-        if (next) next.focus();
-      } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
-        e.preventDefault();
-        const prev = focusables[(idx - 1 + focusables.length) % focusables.length] || focusables.at(0);
-        if (prev) prev.focus();
+        e.stopPropagation();
+        const focusables = getVisibleFocusables();
+        if (focusables.length === 0) return;
+
+        const current = document.activeElement;
+        let idx = focusables.indexOf(current);
+        if (idx === -1) idx = 0;
+
+        if (isNext) {
+          const next = focusables[(idx + 1) % focusables.length];
+          next.focus();
+          next.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        } else if (isPrev) {
+          const prev = focusables[(idx - 1 + focusables.length) % focusables.length];
+          prev.focus();
+          prev.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
       }
-    });
+    }, true);
 
-    if (focusables.length > 0) focusables.at(0).focus();
+    if (initial.length > 0) initial[0].focus();
   });
 </script>
 
 </body>
 </html>
+
