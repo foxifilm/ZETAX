@@ -407,7 +407,7 @@
   <button id="pwaInstallBtn" style="background:linear-gradient(135deg,#d4af37,#f3e5ab); color:#050505; border:none; padding:12px 20px; border-radius:999px; font-weight:700; font-size:14px; cursor:pointer; box-shadow:0 8px 24px rgba(0,0,0,0.6);">
     📲 ZETA X als App installieren
   </div>
-    <a href="Zetax.apk" download="Zetax.apk" style="position: fixed; bottom: 18px; left: 18px; z-index: 9999; background-color: #141414; border: 1px solid #d4af37; color: #d4af37; padding: 12px 20px; border-radius: 999px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.6);">
+    <a id="fireTvBtn" href="Zetax.apk" download="Zetax.apk" style="position: fixed; bottom: 18px; left: 18px; z-index: 9999; background-color: #141414; border: 1px solid #d4af37; color: #d4af37; padding: 12px 20px; border-radius: 999px; text-decoration: none; font-weight: 700; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.6);">
   📺 Fire TV App laden
 </a>
 
@@ -432,6 +432,10 @@
 </script>
 <!-- ZETA X Fußzeile & Jugendschutz-Modal -->
 <style>
+  @media all and (display-mode: standalone) {
+  #fireTvBtn { display: none !important; }
+}
+
   .zetax-footer {
     background-color: #0a0a0a;
     border-top: 1px solid #d4af37;
