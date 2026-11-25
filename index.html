@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+  <meta name="rating" content="12 years" />
   <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="zetax-icon.png">
 <meta name="theme-color" content="#050505">
@@ -425,6 +426,198 @@
       bar.style.display = 'none';
     }
   });
+</script>
+<!-- ZETA X Fußzeile & Jugendschutz-Modal -->
+<style>
+  .zetax-footer {
+    background-color: #0a0a0a;
+    border-top: 1px solid #d4af37;
+    color: #b0b0b0;
+    text-align: center;
+    padding: 25px 15px;
+    margin-top: 50px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+  }
+  .zetax-footer-brand {
+    color: #d4af37;
+    font-weight: bold;
+    letter-spacing: 2px;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .zetax-footer-links {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 15px 0;
+  }
+  .zetax-footer-links button {
+    background-color: #141414;
+    border: 1px solid #d4af37;
+    color: #d4af37;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .zetax-footer-links button:hover {
+    background-color: #d4af37;
+    color: #0a0a0a;
+  }
+  .zetax-fsk-note {
+    font-size: 12px;
+    color: #777777;
+    max-width: 700px;
+    margin: 12px auto 0;
+    line-height: 1.5;
+  }
+
+  /* Modal Styling */
+  .zetax-modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.88);
+    backdrop-filter: blur(4px);
+  }
+  .zetax-modal-content {
+    background-color: #121212;
+    border: 1px solid #d4af37;
+    color: #e5e5e5;
+    margin: 5% auto;
+    padding: 25px 30px;
+    width: 90%;
+    max-width: 680px;
+    max-height: 80vh;
+    overflow-y: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
+    text-align: left;
+    line-height: 1.6;
+  }
+  .zetax-modal-content h2 {
+    color: #d4af37;
+    margin-top: 0;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+  }
+  .zetax-modal-content h3 {
+    color: #d4af37;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  .zetax-close {
+    color: #d4af37;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .zetax-close:hover {
+    color: #ffffff;
+  }
+</style>
+
+<footer class="zetax-footer">
+  <div class="zetax-footer-brand">ZETA X TELEVISION</div>
+  <div class="zetax-footer-links">
+    <button onclick="openZetaxModal('modal-impressum')">Impressum</button>
+    <button onclick="openZetaxModal('modal-datenschutz')">Datenschutzerklärung</button>
+    <button onclick="openZetaxModal('modal-jugendschutz')">🛡️ Jugendschutz & FSK</button>
+  </div>
+  <div class="zetax-fsk-note">
+    © 2026 ZETA X TV – Lineares Web-Fernsehen. Familienfreundliches Programm gemäß JMStV (Ausschließlich FSK 0, FSK 6 &amp; bis max. FSK 12).
+  </div>
+</footer>
+
+<!-- Modal: CEO (Chief Executive Officer) Michael Kühn - Liebenwerdaer Str. 22 - 04924 Maasdorf -->
+<div id="modal-impressum" class="zetax-modal">
+  <div class="zetax-modal-content">
+    <span class="zetax-close" onclick="closeZetaxModal('modal-impressum')">&times;</span>
+    <h2>Impressum</h2>
+    <p><strong>Angaben gemäß § 5 DDG:</strong></p>
+    <p>
+      Michael Kühn / Zeta X<br>
+      Liebenwerdaer Str. 22<br>
+      04924 Maasdorf<br>
+      Deutschland
+    </p>
+    <h3>Kontakt</h3>
+    <p>E-Mail: Foxifilmbusiness@web.de</p>
+    <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+    <p>CEO (Chief Executive Officer Michael Kühn, Liebenwerdaer Str. 22 - 04924 Maasdorf</p>
+  </div>
+</div>
+
+<!-- Modal: Datenschutz -->
+<div id="modal-datenschutz" class="zetax-modal">
+  <div class="zetax-modal-content">
+    <span class="zetax-close" onclick="closeZetaxModal('modal-datenschutz')">&times;</span>
+    <h2>Datenschutzerklärung</h2>
+    <h3>1. Hosting (GitHub Pages)</h3>
+    <p>Diese Web-App wird über GitHub Pages (GitHub Inc., USA) bereitgestellt. Beim Aufruf werden technisch notwendige Verbindungsdaten (z. B. IP-Adresse, Browsertyp) verarbeitet.</p>
+    <h3>2. Lokale 24h-Merkliste</h3>
+    <p>Für die 24-Stunden-Merkliste nutzt ZETA X ausschließlich den lokalen Speicher Ihres Geräts (LocalStorage). Diese Daten werden nicht an externe Server übertragen.</p>
+    <h3>3. Video-Streams (YouTube)</h3>
+    <p>Unsere Sendungen werden über eingebettete Streams von YouTube (Google Ireland Limited) im erweiterten Datenschutzmodus ausgespielt.</p>
+  </div>
+</div>
+
+<!-- Modal: Jugendschutz -->
+<div id="modal-jugendschutz" class="zetax-modal">
+  <div class="zetax-modal-content">
+    <span class="zetax-close" onclick="closeZetaxModal('modal-jugendschutz')">&times;</span>
+    <h2>Jugendschutz &amp; Programmrichtlinien (JMStV)</h2>
+
+    <h3>1. Gesetzliche Grundlage: Der Jugendmedienschutz-Staatsvertrag (JMStV)</h3>
+    <p>ZETA X ist ein lineares Web-TV-Angebot mit ergänzenden Abruffunktionen und unterliegt als Telemedium den Bestimmungen des deutschen <strong>Jugendmedienschutz-Staatsvertrags (JMStV)</strong> sowie des <strong>Jugendschutzgesetzes (JuSchG)</strong>.</p>
+
+    <h3>2. Unsere Programm-Obergrenze: Maximal bis FSK 12 (inkl. 12–15 Jahre)</h3>
+    <ul>
+      <li><strong>Zugelassene Altersstufen:</strong> Wir strahlen ausschließlich Filme, Serien und Dokumentationen der Stufen <strong>FSK 0</strong> (ohne Altersbeschränkung), <strong>FSK 6</strong> (6–11 Jahre) sowie maximal <strong>FSK 12</strong> (gilt rechtlich für alle Jugendlichen von 12 bis einschließlich 15 Jahren) aus.</li>
+      <li><strong>Striktes Verbot von FSK 16 und FSK 18:</strong> Filme, die eine Freigabe <strong>ab 16 Jahren (FSK 16)</strong> oder <strong>keine Jugendfreigabe (FSK 18)</strong> besitzen – oder nach den Kriterien des Jugendschutzes und der FSK eine solche Einstufung erhalten würden –, nehmen wir grundsätzlich <strong>nicht</strong> in unser Programm auf.</li>
+    </ul>
+
+    <h3>3. Selbsteinstufung von Independent-Filmen (§ 5 Abs. 2 JMStV)</h3>
+    <p>Sofern bei unabhängigen Produktionen (Independent-Filmen, Kurzfilmen oder Dokumentationen) keine offizielle FSK-Prüfung vorliegt, nimmt die Redaktion von ZETA X vor der Ausstrahlung eine eigene Altersbewertung nach den strengen Kriterien des Jugendschutzes und der FSK vor. Inhalte, die einer Einstufung ab 16 oder 18 Jahren entsprechen würden, werden konsequent abgelehnt.</p>
+
+    <h3>4. Sendeplan, „Sofort ansehen“-Funktion &amp; 24h-Merkliste</h3>
+    <p>FSK-0- und FSK-6-Titel bilden den Schwerpunkt des Tagesprogramms, während FSK-12-Titel bevorzugt ab 20:00 Uhr laufen. Über die Funktionen <em>„Sofort / Nochmal ansehen“</em> und die lokale <em>24-Stunden-Merkliste</em> sind Sendungen des Tagesprogramms flexibel abrufbar.</p>
+
+    <h3>5. Technische Schutzmaßnahmen auf Ihren Geräten (Fire TV, PWA &amp; Web)</h3>
+    <ul>
+      <li><strong>Amazon Fire TV Stick (ZETA X App):</strong> Nutzen Sie unter <em>Einstellungen &gt; Einstellungen &gt; Kindersicherung</em> die PIN-Sperre für Inhalte ab 12 Jahren.</li>
+      <li><strong>Smartphone &amp; Tablet (PWA):</strong> Nutzen Sie <em>Google Family Link</em> (Android) oder die <em>Apple Bildschirmzeit</em> (iOS).</li>
+      <li><strong>Webbrowser:</strong> Kompatibel mit Jugendschutzprogrammen wie <em>JusProg</em>.</li>
+    </ul>
+
+    <h3>6. Kontakt für Jugendschutzfragen</h3>
+    <p>Ansprechpartner der Programmleitung:CEO (Chief Executive Officer Michael Kühn - Liebenwerdaer Str. 22 - 04924 Maasdorf<br>
+    <strong>E-Mail:</strong> Foxifilmbusiness@web.de</p>
+  </div>
+</div>
+
+<script>
+  function openZetaxModal(id) {
+    document.getElementById(id).style.display = 'block';
+  }
+  function closeZetaxModal(id) {
+    document.getElementById(id).style.display = 'none';
+  }
+  window.onclick = function(event) {
+    if (event.target.classList.contains('zetax-modal')) {
+      event.target.style.display = 'none';
+    }
+  }
 </script>
 
 </body>
